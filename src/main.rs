@@ -1,13 +1,18 @@
-use leptos::*;
+use leptos::prelude::*;
+use leptos::web_sys::console;
 
 fn main() {
     console_error_panic_hook::set_once();
-    leptos::mount_to_body(|| view! { <App /> })
+    leptos::mount::mount_to_body(|| view! { <App /> })
 }
 
 #[component]
 fn App() -> impl IntoView {
-    let (count, set_count) = create_signal(0);
+    let (count, set_count) = signal(0);
+    Effect::new(move |_| {
+        let current_value = count.get();
+        console::log_1(&format!("count changed: {}", current_value).into());
+    });
 
     view! {
         <button
@@ -19,5 +24,9 @@ fn App() -> impl IntoView {
             "Click me: "
             {move || count.get()}
         </button>
+        <ul>
+            <li contenteditable="true">"take the trash out"</li>
+            <li>"work out"</li>
+        </ul>
     }
 }
