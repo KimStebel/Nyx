@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -euo pipefail
+
+source .env
+
+docker run --rm -i \
+  --network notes_default \
+  -e PGPASSWORD="$POSTGRES_PASSWORD" \
+  postgres:17.4-alpine \
+  psql \
+    --host="postgres" \
+    --port=5432 \
+    --username="$POSTGRES_USER" \
+    --dbname="notes" 
