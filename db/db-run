@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-source .env
+source ../.env
 
 docker run --rm -i \
   --network notes_default \
