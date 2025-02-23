@@ -16,7 +16,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     volumes:
-      - ./servers.json:/pgadmin4/servers.json:ro
+      - ./db/servers.json:/pgadmin4/servers.json:ro
       - pgadmin_data:/var/lib/pgadmin
     ports:
       - "5050:80"
