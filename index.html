@@ -6,6 +6,29 @@
     .red {
       color: red;
     }
+
+    * {
+      /* Remove the browser's default margin/padding so you can control it uniformly */
+      margin: 0;
+      padding: 0;
+      font-family: Helvetica, sans-serif;
+    }
+
+    body {
+      margin: 20px;
+      background-color: #222;
+      color: #eee;
+      font-size: 18px;
+      line-height: 24px;
+    }
+
+    span[contenteditable="true"]:focus {
+      outline: none;
+    }
+
+    .details {
+      margin-left: 20px;
+    }
   </style>
 
 </head>
