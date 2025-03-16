@@ -1,4 +1,13 @@
 services:
+  nyx:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nyx
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
   postgres:
     image: postgres:17.4-alpine
     container_name: postgres
