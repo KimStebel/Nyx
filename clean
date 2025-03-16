@@ -2,6 +2,6 @@
 
 set -euo pipefail
 
-trunk serve --port 3000
-
+cargo clean
+rm -rf ./dist
 
