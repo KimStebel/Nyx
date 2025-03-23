@@ -37,6 +37,17 @@ impl Node {
             children.insert(0, child_signal);
         });
     }
+
+    pub fn remove_child(&self, id: usize) -> bool {
+        let mut success = false;
+        self.children.update(|children| {
+            if let Some(index) = children.iter().position(|child| child.get().id() == id) {
+                children.remove(index);
+                success = true;
+            }
+        });
+        success
+    }
 }
 
 #[cfg(test)]
@@ -62,5 +73,34 @@ mod tests {
         assert_eq!(updated_children.len(), 2);
         assert_eq!(updated_children[0].get().text.get(), "Child 2");
         assert_eq!(updated_children[1].get().text.get(), "Child 1");
+    }
+
+    #[test]
+    fn test_remove_child() {
+        // Create parent with two children
+        let child1 = Node::new(false, "Child 1", vec![]);
+        let child2 = Node::new(false, "Child 2", vec![]);
+        let node = Node::new(true, "Parent", vec![child1, child2]);
+        
+        // Get child IDs
+        let children = node.children.get();
+        let child1_id = children[0].get().id();
+        let child2_id = children[1].get().id();
+        
+        // Remove first child
+        let result = node.remove_child(child1_id);
+        assert!(result);
+        
+        // Check child was removed
+        let updated_children = node.children.get();
+        assert_eq!(updated_children.len(), 1);
+        assert_eq!(updated_children[0].get().id(), child2_id);
+        
+        // Try to remove non-existent child
+        let result = node.remove_child(9999);
+        assert!(!result);
+        
+        // Check children count remains unchanged
+        assert_eq!(node.children.get().len(), 1);
     }
 }
