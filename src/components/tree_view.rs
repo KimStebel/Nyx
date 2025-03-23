@@ -5,10 +5,11 @@ use crate::models::Node;
 
 #[component]
 pub fn TreeView(node: Node) -> impl IntoView {
-    let is_open = node.is_open.read_only();
+    let is_open = node.is_open;
     let set_is_open = node.is_open.write_only();
     let text = node.text.read_only();
     let set_text = node.text.write_only();
+    // let children = node.children;
 
     let fold_click = move |_ev: MouseEvent| {
         set_is_open.update(|open| *open = !*open);
@@ -23,15 +24,39 @@ pub fn TreeView(node: Node) -> impl IntoView {
         }
     };
 
+    // let add_empty_node = move |_ev: MouseEvent| {
+    //     let empty_node = Node::new(false, "", vec![]);
+    //     let child_signal = RwSignal::new(empty_node);
+    //     children.update(|children| {
+    //         children.insert(0, child_signal);
+    //     });
+    //     is_open.update(|o| *o = true);
+    // };
+
+    let add_empty_node = move |_ev: MouseEvent| {
+        let empty_node = Node::new(false, "", vec![]);
+        node.prepend_child(empty_node);
+        node.is_open.update(|o| *o = true);
+    };
+
     view! {
         <div>
-            <span on:blur=on_blur on:click=fold_click style="cursor: pointer">
-                "* "
+            <span class="carret" on:blur=on_blur on:click=fold_click>
+                {move || if is_open.get() {"⌄ "} else {"〉 "}}
             </span>
-            <span contenteditable="true">{text}</span>
+            <span class="node-text" contenteditable="true">{text}</span>
+            <button class="add" on:click=add_empty_node>
+                "+"
+            </button>
             <Show when=move || is_open.get() && !node.children.get().is_empty()>
                 <div class="details">
-                    <TreeView node=node.children.get().first().unwrap().get() />
+                    <For
+                        each=move || node.children.get()
+                        key=|child| child.get().id()
+                        let:child
+                    >
+                        <TreeView node=child.get() />
+                    </For>
                 </div>
             </Show>
         </div>
@@ -40,6 +65,7 @@ pub fn TreeView(node: Node) -> impl IntoView {
 }
 
 #[cfg(test)]
+#[allow(dead_code)]
 mod tests {
     use super::*;
     use wasm_bindgen_test::*;
