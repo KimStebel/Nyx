@@ -1,4 +1,5 @@
 use leptos::prelude::*;
+use serde_json::{json, Value};
 
 #[derive(Clone)]
 #[derive(Copy)]
@@ -47,6 +48,21 @@ impl Node {
             }
         });
         success
+    }
+
+    pub fn to_json(&self) -> Value {
+        let children: Vec<Value> = self.children
+            .get()
+            .iter()
+            .map(|child_signal| child_signal.get().to_json())
+            .collect();
+
+        json!({
+            "id": self.id.get(),
+            "is_open": self.is_open.get(),
+            "text": self.text.get(),
+            "children": children
+        })
     }
 }
 
@@ -102,5 +118,43 @@ mod tests {
         
         // Check children count remains unchanged
         assert_eq!(node.children.get().len(), 1);
+    }
+
+    #[test]
+    fn test_to_json() {
+        // Create a nested node structure
+        let grandchild = Node::new(false, "Grandchild", vec![]);
+        let child = Node::new(true, "Child", vec![grandchild]);
+        let parent = Node::new(true, "Parent", vec![child]);
+        
+        // Get JSON representation
+        let json = parent.to_json();
+        
+        // Verify top-level properties
+        assert_eq!(json["text"], "Parent");
+        assert_eq!(json["is_open"], true);
+        assert!(json["id"].is_number());
+        
+        // Verify child structure
+        let children = &json["children"];
+        assert!(children.is_array());
+        assert_eq!(children.as_array().unwrap().len(), 1);
+        
+        // Verify first child properties
+        let first_child = &children[0];
+        assert_eq!(first_child["text"], "Child");
+        assert_eq!(first_child["is_open"], true);
+        
+        // Verify grandchild structure
+        let grandchildren = &first_child["children"];
+        assert!(grandchildren.is_array());
+        assert_eq!(grandchildren.as_array().unwrap().len(), 1);
+        
+        // Verify grandchild properties
+        let first_grandchild = &grandchildren[0];
+        assert_eq!(first_grandchild["text"], "Grandchild");
+        assert_eq!(first_grandchild["is_open"], false);
+        assert!(first_grandchild["children"].is_array());
+        assert!(first_grandchild["children"].as_array().unwrap().is_empty());
     }
 }
