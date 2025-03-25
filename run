@@ -2,6 +2,6 @@
 
 set -euo pipefail
 
-trunk serve --port 3000
+trunk serve --address 0.0.0.0 --port 3000
 
 
