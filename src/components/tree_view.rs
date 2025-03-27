@@ -43,15 +43,15 @@ pub fn TreeView(node: Node, #[prop(optional)] on_remove: Option<Callback<Node>>)
 
     view! {
         <div>
-            <span class="carret" on:blur=on_blur on:click=fold_click>
+            <span class="carret" on:click=fold_click>
                 {move || if is_open.get() {"⌄ "} else {"〉 "}}
             </span>
-            <span class="node-text" contenteditable="true">{text}</span>
-            <button class="add" on:click=add_empty_node>
-                "+"
-            </button>
-            <button class="remove" on:click=remove_click>
+            <span on:blur=on_blur class="node-text" contenteditable="true">{text}</span>
+            <button class="action" on:click=remove_click>
                 "-"
+            </button>
+            <button class="action" on:click=add_empty_node>
+                "+"
             </button>
             <Show when=move || is_open.get() && !node.children.get().is_empty()>
                 <div class="details">

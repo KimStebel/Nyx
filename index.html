@@ -2,6 +2,7 @@
 <html>
 
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     .red {
       color: red;
@@ -11,10 +12,10 @@
       /* Remove the browser's default margin/padding so you can control it uniformly */
       margin: 0;
       padding: 0;
-      font-family: Helvetica, sans-serif;
     }
 
     body {
+      font-family: Helvetica, sans-serif;
       margin: 20px;
       background-color: #222;
       color: #eee;
@@ -28,7 +29,7 @@
 
     span.node-text {
       display: inline-block;
-      min-width: 600px;
+      min-width: 200px;
     }
 
     span.carret {
@@ -41,9 +42,11 @@
       margin-left: 20px;
     }
 
-    button.add {
+    button.action {
       margin-left: 5px;
       cursor: pointer;
+      width: 20px;
+      float: right;
     }
   </style>
 
