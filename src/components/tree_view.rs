@@ -1,3 +1,5 @@
+use leptos::html::Span;
+use leptos::logging::log;
 use leptos::prelude::*;
 use leptos::web_sys::*;
 
@@ -14,10 +16,11 @@ pub fn TreeView(node: Node, #[prop(optional)] on_remove: Option<Callback<Node>>)
         set_is_open.update(|open| *open = !*open);
     };
 
-    let on_blur = move |ev: FocusEvent| {
+    let on_input = move |ev: Event| {
         if let Some(target) = ev.target() {
             if let Ok(elem) = wasm_bindgen::JsCast::dyn_into::<HtmlElement>(target) {
                 let new_text = elem.inner_text().to_string();
+                log!("onInput fired with text `{}`", &new_text);
                 set_text.update(|c| *c = new_text);
             }
         }
@@ -30,23 +33,40 @@ pub fn TreeView(node: Node, #[prop(optional)] on_remove: Option<Callback<Node>>)
     };
 
     let on_remove_cb = Callback::new(move |n: Node| {
-        leptos::logging::log!("ha! {}", n.id.get_untracked());
         node.remove_child(n.id.get_untracked());
     });
 
     let remove_click = move |_ev: MouseEvent| {
-        leptos::logging::log!("clicked!");
         if let Some(cb) = on_remove {
             cb.run(node);
         }
     };
+
+    let span_ref: NodeRef<Span> = NodeRef::new();
+
+    let has_focus = move || {
+        if let Some(span_el) = span_ref.get() {
+            if let Some(active_el) = document().active_element() {
+                return active_el == **span_el;
+            }
+        }
+        false
+    };
+
+    Effect::new(move |_| {
+        if let Some(span) = span_ref.get() {
+            if !has_focus() {
+                span.set_inner_text(&text.get());
+            }
+        };
+    });
 
     view! {
         <div>
             <span class="carret" on:click=fold_click>
                 {move || if is_open.get() {"⌄ "} else {"〉 "}}
             </span>
-            <span on:blur=on_blur class="node-text" contenteditable="true">{text}</span>
+            <span node_ref=span_ref on:input=on_input class="node-text" contenteditable="true"></span>
             <button class="action" on:click=remove_click>
                 "-"
             </button>
