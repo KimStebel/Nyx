@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -euo pipefail
+
+docker run --name nyx -d -p8080:80 kimstebel/nyx:latest
+
